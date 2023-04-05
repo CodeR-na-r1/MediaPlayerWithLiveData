@@ -10,10 +10,10 @@ import com.mrx.mediaplayerwithlivedata.databinding.ActivityMainBinding
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
-    var isPlaying = false
+    private val mediaPlayerService by lazy { ServiceLocator.getMediaPlayerService(applicationContext) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        Log.d("myTag", "onDestroy")
+        Log.d("myTag", "onCreate")
 
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -21,41 +21,30 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        MediaPlayerService.startService(applicationContext, TRACK_NAME)
+        MyMediaPlayerService.startService(applicationContext, TRACK_NAME)
 
         binding.playOrStop.setOnClickListener(playOrStopButtonListener)
 
         binding.toSecondActivity.setOnClickListener(toSecondActivityButtonListener)
     }
 
-    override fun onResume() {
-        super.onResume()
-
-        Log.d("myTag", "onResume IS_PLAYING is ${IS_PLAYING}")
-
-        isPlaying = IS_PLAYING ?: false
-        IS_PLAYING = null
-        updatePlayOrStopButton()
-    }
-
     private val playOrStopButtonListener = { view: View ->
-        sendBroadcast(Intent().apply {
-            action = BROADCAST_CONSTANTS.ID.value
-            putExtra(BROADCAST_CONSTANTS.STRING_DATA_TYPE_KEY.value, BROADCAST_CONSTANTS.SWITCH_STATE.value)
-        })
+        if (mediaPlayerService.isPlaying()) {
+            mediaPlayerService.pause()
+        }
+        else {
+            mediaPlayerService.start()
+        }
 
-        isPlaying = !isPlaying
         updatePlayOrStopButton()
     }
 
     private val toSecondActivityButtonListener = { view: View ->
-        startActivity(Intent(this, DetailActivity::class.java).apply {
-            putExtra(BROADCAST_CONSTANTS.STRING_DATA_IS_PLAYING_KEY.value, isPlaying)
-        })
+        startActivity(Intent(this, DetailActivity::class.java))
     }
 
     private fun updatePlayOrStopButton() {
-        if (isPlaying)
+        if (mediaPlayerService.isPlaying())
             binding.playOrStop.setImageResource(R.drawable.pause)
         else
             binding.playOrStop.setImageResource(R.drawable.play)
@@ -65,13 +54,11 @@ class MainActivity : AppCompatActivity() {
         super.onDestroy()
         Log.d("myTag", "onDestroy")
 
-        MediaPlayerService.stopService(applicationContext)
+        MyMediaPlayerService.stopService(applicationContext)
     }
 
     companion object {
         const val TAG = "myTag"
-
-        var IS_PLAYING: Boolean? = null
 
         const val TRACK_NAME = "DU_HAST.mp3"
     }
