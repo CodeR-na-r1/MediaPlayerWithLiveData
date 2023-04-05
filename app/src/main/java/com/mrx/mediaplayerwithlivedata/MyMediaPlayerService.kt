@@ -17,7 +17,7 @@ class MyMediaPlayerService(): Service() {
 
     /* fields */
 
-    private val mediaPlayer = MediaPlayer()
+    private var mediaPlayer = MediaPlayer()
 
     var IS_NEW_TRACK = true
 
@@ -65,6 +65,7 @@ class MyMediaPlayerService(): Service() {
         } else {
             Log.d(TAG, "Service start new track -> ${TRACK_NAME.value}")
             val afd = assets.openFd(TRACK_NAME.value!!)
+            mediaPlayer = MediaPlayer()
             mediaPlayer.setDataSource(afd.fileDescriptor, afd.startOffset, afd.length)
 
             IS_NEW_TRACK = false
