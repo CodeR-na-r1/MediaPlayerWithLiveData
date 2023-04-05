@@ -20,7 +20,8 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        //MyMediaPlayerService.startService(applicationContext)
+        MyMediaPlayerService.startService(applicationContext)
+        MyMediaPlayerService.TRACK_NAME.value = "DU_HAST.mp3"
 
         binding.playOrStop.setOnClickListener(playOrStopButtonListener)
 
@@ -28,22 +29,17 @@ class MainActivity : AppCompatActivity() {
     }
 
     private val playOrStopButtonListener = { view: View ->
-        if (MyMediaPlayerService.isPlaying()) {
-            MyMediaPlayerService.pause()
-        }
-        else {
-            MyMediaPlayerService.start()
-        }
+        MyMediaPlayerService.isPlaying.value = MyMediaPlayerService.isPlaying.value != true
 
         updatePlayOrStopButton()
     }
 
     private val toSecondActivityButtonListener = { view: View ->
-        //startActivity(Intent(this, DetailActivity::class.java))
+        startActivity(Intent(this, DetailActivity::class.java))
     }
 
     private fun updatePlayOrStopButton() {
-        if (MyMediaPlayerService.isPlaying())
+        if (MyMediaPlayerService.isPlaying.value == true)
             binding.playOrStop.setImageResource(R.drawable.pause)
         else
             binding.playOrStop.setImageResource(R.drawable.play)
