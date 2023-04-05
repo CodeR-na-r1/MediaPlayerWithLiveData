@@ -10,7 +10,6 @@ import com.mrx.mediaplayerwithlivedata.databinding.ActivityMainBinding
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
-    private val mediaPlayerService by lazy { ServiceLocator.getMediaPlayerService(applicationContext) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.d("myTag", "onCreate")
@@ -21,7 +20,7 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        MyMediaPlayerService.startService(applicationContext, TRACK_NAME)
+        //MyMediaPlayerService.startService(applicationContext)
 
         binding.playOrStop.setOnClickListener(playOrStopButtonListener)
 
@@ -29,22 +28,22 @@ class MainActivity : AppCompatActivity() {
     }
 
     private val playOrStopButtonListener = { view: View ->
-        if (mediaPlayerService.isPlaying()) {
-            mediaPlayerService.pause()
+        if (MyMediaPlayerService.isPlaying()) {
+            MyMediaPlayerService.pause()
         }
         else {
-            mediaPlayerService.start()
+            MyMediaPlayerService.start()
         }
 
         updatePlayOrStopButton()
     }
 
     private val toSecondActivityButtonListener = { view: View ->
-        startActivity(Intent(this, DetailActivity::class.java))
+        //startActivity(Intent(this, DetailActivity::class.java))
     }
 
     private fun updatePlayOrStopButton() {
-        if (mediaPlayerService.isPlaying())
+        if (MyMediaPlayerService.isPlaying())
             binding.playOrStop.setImageResource(R.drawable.pause)
         else
             binding.playOrStop.setImageResource(R.drawable.play)
@@ -59,7 +58,5 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         const val TAG = "myTag"
-
-        const val TRACK_NAME = "DU_HAST.mp3"
     }
 }
